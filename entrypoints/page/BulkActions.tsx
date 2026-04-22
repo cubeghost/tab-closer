@@ -1,7 +1,11 @@
 import { useShallow } from "zustand/shallow";
-import { useTabsStore } from "./store";
+import { type Tab, useTabsStore } from "./store";
+import { Service } from "@/lib/services";
+import { SERVICE_ICONS, SERVICE_NAMES, useServices } from "./services";
+import { sendMessage } from "@/lib/messaging";
 
 export default function BulkActions() {
+  const { anytype, instapaper } = useServices();
   const { selectedTabs, clearSelected } = useTabsStore(
     useShallow((state) => ({
       selectedTabs: state.selectedTabs,
@@ -9,12 +13,103 @@ export default function BulkActions() {
     })),
   );
 
-  if (selectedTabs.length === 0) return null;
-
   return (
     <div className="flex">
-      {selectedTabs.length} tabs selected
-      <button>do something</button>
+      <span>{selectedTabs.length} tabs selected</span>
+      <div className="not-prose flex">
+        {selectedTabs.length > 0 && (
+          <>
+            {anytype && <BulkSaveAction service="anytype" />}
+            {instapaper && <BulkSaveAction service="instapaper" />}
+          </>
+        )}
+      </div>
+      <button
+        onClick={clearSelected}
+        className="ml-auto font-normal text-sm bg-gray-200 rounded px-2"
+      >
+        Clear selected
+      </button>
     </div>
   );
 }
+
+function BulkSaveAction({ service }: { service: Service }) {
+  const serviceName = SERVICE_NAMES[service];
+  const { addLogs, autoCloseTabs } = useTabsStore(
+    useShallow((state) => ({
+      addLogs: state.addLogs,
+      autoCloseTabs: state.autoCloseTabs,
+    })),
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+
+  function log(tab: Tab, error?: Error) {
+    addLogs([
+      {
+        type: error ? "error" : "success",
+        message: error
+          ? `Error saving to ${serviceName}: ${error.message}`
+          : `Saved to ${serviceName}`,
+        service,
+        tab: tab,
+      },
+    ]);
+  }
+
+  async function save() {
+    setLoading(true);
+    const { windows, selectedTabs } = useTabsStore.getState();
+    const tabs = windows
+      .flatMap((window) => window.tabs)
+      .filter((tab) => tab.id && selectedTabs.includes(tab.id));
+    const results = await Promise.allSettled(
+      tabs.map(async (tab) => {
+        try {
+          const saved = await sendMessage("save", {
+            service,
+            tab,
+          });
+          console.log("saved", service, saved);
+
+          if (saved) {
+            log(tab);
+          }
+        } catch (err) {
+          log(tab, err as Error);
+        } finally {
+          return tab.id;
+        }
+      }),
+    );
+    const fulfilled = results.filter(isFulfilled);
+    autoCloseTabs(fulfilled.map((p) => p.value));
+    setLoading(false);
+  }
+
+  return (
+    <button
+      onClick={save}
+      disabled={loading}
+      className="cursor-pointer relative mx-1"
+    >
+      <img
+        src={SERVICE_ICONS[service]}
+        alt={`Save to ${serviceName}`}
+        className="size-4"
+      />
+      {loading && (
+        <div className="absolute top-0 left-0">
+          <Spinner />
+        </div>
+      )}
+    </button>
+  );
+}
+
+const isFulfilled = <T,>(
+  p: PromiseSettledResult<T>,
+): p is PromiseFulfilledResult<T> => p.status === "fulfilled";
+const isRejected = <T,>(
+  p: PromiseSettledResult<T>,
+): p is PromiseRejectedResult => p.status === "rejected";

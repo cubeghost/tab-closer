@@ -5,6 +5,7 @@ import {
   anytypeAuthKey,
   anytypeSave,
   anytypeSpaces,
+  anytypeTypes,
 } from "@/lib/anytype";
 
 export default defineBackground(() => {
@@ -18,10 +19,10 @@ export default defineBackground(() => {
 
   onMessage("save", async (message) => {
     switch (message.data.service) {
-      case "instapaper":
-        return await instapaperSave(message.data.tab);
       case "anytype":
         return await anytypeSave(message.data.tab);
+      case "instapaper":
+        return await instapaperSave(message.data.tab);
     }
   });
 

@@ -63,9 +63,7 @@ export function Anytype() {
     setSubmitting(true);
 
     try {
-      await anytypeApiKey.setValue("");
-      setAuthed(false);
-      setSpaces([]);
+      await anytypeSpace.setValue(space);
     } catch (err) {
     } finally {
       setSubmitting(false);
@@ -97,14 +95,16 @@ export function Anytype() {
           className="p-1 min-w-48"
         >
           {spaces.map((space) => (
-            <option value={space.id}>{space.name}</option>
+            <option value={space.id} key={space.id}>
+              {space.name}
+            </option>
           ))}
         </select>
       </label>
       <button
         type="submit"
         disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
+        className="bg-blue-600 text-white mr-2 px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
       >
         {submitting ? "Saving..." : "Save"}
       </button>

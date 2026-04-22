@@ -1,9 +1,10 @@
 import { CSSProperties } from "react";
+import { useShallow } from "zustand/shallow";
 
 import { useTabsStore } from "./store";
 import type { Tab } from "./store";
-import { useShallow } from "zustand/shallow";
 import Actions from "./Actions";
+import Favicon from "./Favicon";
 
 const TAB_GROUP_COLORS = {
   grey: "#5f6368",
@@ -79,17 +80,16 @@ export default function Tab({ tab }: { tab: Tab }) {
           checked={selected}
           onChange={() => toggleSelected(tab.id)}
         />
-        {tab.favIconUrl ? (
-          <img src={tab.favIconUrl} className="size-4" />
-        ) : (
-          <div className="size-4 bg-linear-to-b from-gray-100 to-gray-300" />
-        )}
-        <div className="min-w-56">
+        <Favicon tab={tab} />
+        <div className="min-w-56 truncate">
           <a href={tab.url} target="_blank" onClick={focusTab}>
             {tab.title}
           </a>
         </div>
-        <Actions tab={tab} className="opacity-0 group-hover:opacity-100" />
+        <Actions
+          tab={tab}
+          className="opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+        />
       </li>
     </>
   );

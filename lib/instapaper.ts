@@ -33,10 +33,8 @@ export async function instapaperSave(tab: Browser.tabs.Tab) {
 
   const response = await fetch(`${API_BASE}/add`, {
     method: "POST",
-    mode: "no-cors",
     body: formdata,
   });
 
-  console.log(await response.text());
-  return response.status;
+  return response.ok;
 }

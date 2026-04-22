@@ -55,12 +55,33 @@ export async function anytypeSpaces() {
   }
 }
 
+export async function anytypeTypes() {
+  const apiKey = await anytypeApiKey.getValue();
+  const spaceId = await anytypeSpace.getValue();
+  if (!apiKey || !spaceId) return false;
+
+  const response = await fetch(`${API_BASE}/spaces/${spaceId}/types`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Anytype-Version": "2025-11-08",
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (response.ok) {
+    return (await response.json()).data;
+  } else {
+    throw new Error("Failed to get types");
+  }
+}
+
 export async function anytypeSave(tab: Browser.tabs.Tab) {
   if (!tab.url) throw new Error("Cannot save tab without url");
 
   const apiKey = await anytypeApiKey.getValue();
   const spaceId = await anytypeSpace.getValue();
-  if (!apiKey || !anytypeSpace) return false;
+  if (!apiKey || !spaceId) return false;
 
   const response = await fetch(`${API_BASE}/spaces/${spaceId}/objects`, {
     method: "POST",
@@ -73,14 +94,12 @@ export async function anytypeSave(tab: Browser.tabs.Tab) {
       name: tab.title || tab.url,
       type_key: "bookmark",
       layout: "bookmark",
-
-      // source: tab.url,
       properties: [{ key: "source", url: tab.url }],
     }),
   });
 
   if (response.ok) {
-    return await response.json();
+    return true;
   } else {
     throw new Error("Failed to create object");
   }

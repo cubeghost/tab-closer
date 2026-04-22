@@ -1,21 +1,11 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 
 import { sendMessage } from "@/lib/messaging";
-import { anytypeApiKey, instapaperUsername } from "@/lib/storage";
 import Spinner from "@/components/Spinner";
-
-import instapaperIcon from "@/assets/instapaper.png";
-import anytypeIcon from "@/assets/anytype.png";
 import { Tab, useTabsStore } from "./store";
-
-const instapaperUsernamePromise = instapaperUsername.getValue();
-const anytypeApiKeyPromise = anytypeApiKey.getValue();
-
-const SERVICE_NAMES = {
-  anytype: "Anytype",
-  instapaper: "Instapaper",
-} as const;
+import { SERVICE_ICONS, SERVICE_NAMES, useServices } from "./services";
+import { Service } from "@/lib/services";
 
 export default function Actions({
   tab,
@@ -24,34 +14,25 @@ export default function Actions({
   tab: Tab;
   className?: string;
 }) {
-  const enableInstagram = use(instapaperUsernamePromise);
-  const enableAnytype = use(anytypeApiKeyPromise);
+  const { anytype, instapaper } = useServices();
 
   if (!tab.url) return null;
 
   return (
     <div className={className}>
-      {enableInstagram && (
-        <SaveAction service="instapaper" icon={instapaperIcon} tab={tab} />
-      )}
-      {enableAnytype && (
-        <SaveAction service="anytype" icon={anytypeIcon} tab={tab} />
-      )}
+      {anytype && <SaveAction service="anytype" tab={tab} />}
+      {instapaper && <SaveAction service="instapaper" tab={tab} />}
     </div>
   );
 }
 
-function SaveAction({
-  service,
-  icon,
-  tab,
-}: {
-  service: "instapaper" | "anytype";
-  icon: string;
-  tab: Tab;
-}) {
-  const { addLogs } = useTabsStore(
-    useShallow((state) => ({ addLogs: state.addLogs })),
+function SaveAction({ service, tab }: { service: Service; tab: Tab }) {
+  const serviceName = SERVICE_NAMES[service];
+  const { addLogs, autoCloseTabs } = useTabsStore(
+    useShallow((state) => ({
+      addLogs: state.addLogs,
+      autoCloseTabs: state.autoCloseTabs,
+    })),
   );
   const [status, setStatus] = useState<"loading" | "success" | "error" | null>(
     null,
@@ -59,39 +40,38 @@ function SaveAction({
   const [error, setError] = useState<string | null>(null);
 
   function log(error?: Error) {
-    const serviceName = SERVICE_NAMES[service];
-    if (error) {
-      addLogs([
-        {
-          message: `Error saving to ${serviceName}: ${error.message}`,
-          url: tab.url ?? "",
-        },
-      ]);
-    } else {
-      addLogs([{ message: `Saved to ${serviceName}`, url: tab.url ?? "" }]);
-    }
+    addLogs([
+      {
+        type: error ? "error" : "success",
+        message: error
+          ? `Error saving to ${serviceName}: ${error.message}`
+          : `Saved to ${serviceName}`,
+        service,
+        tab,
+      },
+    ]);
   }
 
   async function save() {
     setStatus("loading");
     try {
-      const response = await sendMessage("save", {
+      const saved = await sendMessage("save", {
         service,
         tab,
       });
-      setTimeout(() => {
+
+      if (saved) {
         log();
         setStatus("success");
         setError(null);
+        autoCloseTabs([tab.id]);
         setTimeout(() => setStatus(null), 5000);
-      }, 3000);
+      }
     } catch (err) {
       setStatus("error");
       log(err as Error);
     }
   }
-
-  console.log(status);
 
   return (
     <button
@@ -99,7 +79,11 @@ function SaveAction({
       disabled={status === "loading"}
       className="cursor-pointer relative mx-1"
     >
-      <img src={icon} alt={`Save to ${service}`} className="size-4" />
+      <img
+        src={SERVICE_ICONS[service]}
+        alt={`Save to ${serviceName}`}
+        className="size-4"
+      />
       {status === "loading" && (
         <div className="absolute top-0 left-0">
           <Spinner />

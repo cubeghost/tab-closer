@@ -1,3 +1,4 @@
+import { Service } from "@/lib/services";
 import { create } from "zustand";
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
@@ -7,8 +8,10 @@ export type Tab = Browser.tabs.Tab;
 export type TabGroup = Browser.tabGroups.TabGroup;
 
 export interface Log {
+  type: "success" | "error";
+  tab: Tab;
+  service: Service;
   message: string;
-  url: string;
 }
 
 interface TabsStore {
@@ -25,12 +28,15 @@ interface TabsStore {
 
   toggleSelected: (id: Tab["id"]) => void;
   clearSelected: () => void;
+
   toggleAutoClose: () => void;
+  autoCloseTabs: (ids: Tab["id"][]) => Promise<void>;
+
   addLogs: (newLogs: Log[]) => void;
   clearLogs: () => void;
 }
 
-export const useTabsStore = create<TabsStore>((set) => ({
+export const useTabsStore = create<TabsStore>((set, get) => ({
   windows: [],
   fetchWindows: async () => {
     const windows = await browser.windows.getAll({ populate: true });
@@ -53,8 +59,23 @@ export const useTabsStore = create<TabsStore>((set) => ({
   },
 
   search: "",
-  autoClose: true,
+  autoClose: false,
   toggleAutoClose: () => set((state) => ({ autoClose: !state.autoClose })),
+  autoCloseTabs: async (maybeIds: Tab["id"][]) => {
+    const ids = maybeIds.filter((id) => id !== undefined);
+    if (get().autoClose) {
+      await browser.tabs.remove(ids);
+      set((state) => ({
+        windows: state.windows.map((window) => ({
+          ...window,
+          tabs: window.tabs.filter((tab) =>
+            tab.id ? !ids.includes(tab.id) : true,
+          ),
+        })),
+        selectedTabs: state.selectedTabs.filter((id) => !ids.includes(id)),
+      }));
+    }
+  },
 
   selectedTabs: [],
   toggleSelected: (id: Tab["id"]) => {

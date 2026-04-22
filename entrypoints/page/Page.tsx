@@ -1,14 +1,32 @@
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
+import { Settings01 } from "@untitledui/icons";
 
 import { useTabsStore } from "./store";
 import BulkActions from "./BulkActions";
 import Tab from "./Tab";
+import { SERVICE_ICONS, useServices } from "./services";
+import Favicon from "./Favicon";
 
 function App() {
+  const services = useServices();
+
+  function openOptions() {
+    browser.runtime.openOptionsPage();
+  }
+
   return (
     <div className="p-3 prose flex flex-col h-full max-w-full">
-      <Options />
+      <div className="flex items-center w-full">
+        <div className="flex">
+          <h1 className="text-2xl mb-0">Tab Closer</h1>
+          <button className="ml-4" onClick={openOptions} title="">
+            <Settings01 className="size-6 text-gray-500" />
+          </button>
+        </div>
+
+        <Options />
+      </div>
       <BulkActions />
       <Tabs />
       <Logs />
@@ -58,11 +76,11 @@ function Options() {
   );
 
   return (
-    <div className="flex">
-      <label className="flex my-1 mx-2 items-center">
+    <div className="flex ml-auto">
+      {/* <label className="flex my-1 mx-2 items-center">
         <span>Search</span>
         <input type="text" className="p-1 ml-2" />
-      </label>
+      </label> */}
       <label className="flex my-1 mx-2 items-center">
         <input
           type="checkbox"
@@ -92,13 +110,24 @@ function Logs() {
           Clear
         </button>
       </h4>
-      <div className="max-h-1/3 overflow-y-scroll no-prose">
-        <table>
+      <div className="max-h-1/3 overflow-y-scroll">
+        <table className="mt-0 mb-0">
           <tbody>
             {logs.map((log, i) => (
               <tr key={`log-${i}`}>
+                <td className="w-6 not-prose">
+                  <img src={SERVICE_ICONS[log.service]} className="size-4" />
+                </td>
                 <td>{log.message}</td>
-                <td>{log.url}</td>
+                <td>
+                  <Favicon
+                    tab={log.tab}
+                    className="not-prose inline-block mr-1"
+                  />
+                  <a href={log.tab.url} target="_blank">
+                    {log.tab.url}
+                  </a>
+                </td>
               </tr>
             ))}
           </tbody>
