@@ -88,7 +88,7 @@ export default function Tab({ tab }: { tab: Tab }) {
         </div>
         <Actions
           tab={tab}
-          className="opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+          className="flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100"
         />
       </li>
     </>

@@ -3,33 +3,50 @@ import { type Tab, useTabsStore } from "./store";
 import { Service } from "@/lib/services";
 import { SERVICE_ICONS, SERVICE_NAMES, useServices } from "./services";
 import { sendMessage } from "@/lib/messaging";
+import { X } from "@untitledui/icons";
 
 export default function BulkActions() {
   const { anytype, instapaper } = useServices();
-  const { selectedTabs, clearSelected } = useTabsStore(
+  const { selectedTabs, clearSelected, closeTabs } = useTabsStore(
     useShallow((state) => ({
       selectedTabs: state.selectedTabs,
       clearSelected: state.clearSelected,
+      closeTabs: state.closeTabs,
     })),
   );
+
+  function closeSelectedTabs() {
+    const tabIds = useTabsStore.getState().selectedTabs;
+    if (tabIds.length === 0) return;
+    closeTabs(tabIds);
+  }
 
   return (
     <div className="flex">
       <span>{selectedTabs.length} tabs selected</span>
-      <div className="not-prose flex">
+      <div className="not-prose flex items-center ml-2">
         {selectedTabs.length > 0 && (
           <>
             {anytype && <BulkSaveAction service="anytype" />}
             {instapaper && <BulkSaveAction service="instapaper" />}
+            <button
+              onClick={closeSelectedTabs}
+              className="block bg-red-100 text-red-400 rounded mx-1 size-4 cursor-pointer hover:bg-red-200"
+              title="Close"
+            >
+              <X className="size-4" />
+            </button>
           </>
         )}
       </div>
-      <button
-        onClick={clearSelected}
-        className="ml-auto font-normal text-sm bg-gray-200 rounded px-2"
-      >
-        Clear selected
-      </button>
+      {selectedTabs.length > 0 && (
+        <button
+          onClick={clearSelected}
+          className="ml-auto text-sm bg-gray-200 rounded px-2"
+        >
+          Clear selected
+        </button>
+      )}
     </div>
   );
 }
@@ -91,7 +108,8 @@ function BulkSaveAction({ service }: { service: Service }) {
     <button
       onClick={save}
       disabled={loading}
-      className="cursor-pointer relative mx-1"
+      className="cursor-pointer relative mx-1 opacity-80 hover:opacity-100"
+      title={`Save to ${serviceName}`}
     >
       <img
         src={SERVICE_ICONS[service]}

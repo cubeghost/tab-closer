@@ -31,6 +31,7 @@ interface TabsStore {
 
   toggleAutoClose: () => void;
   autoCloseTabs: (ids: Tab["id"][]) => Promise<void>;
+  closeTabs: (ids: Tab["id"][]) => Promise<void>;
 
   addLogs: (newLogs: Log[]) => void;
   clearLogs: () => void;
@@ -75,6 +76,19 @@ export const useTabsStore = create<TabsStore>((set, get) => ({
         selectedTabs: state.selectedTabs.filter((id) => !ids.includes(id)),
       }));
     }
+  },
+  closeTabs: async (maybeIds: Tab["id"][]) => {
+    const ids = maybeIds.filter((id) => id !== undefined);
+    await browser.tabs.remove(ids);
+    set((state) => ({
+      windows: state.windows.map((window) => ({
+        ...window,
+        tabs: window.tabs.filter((tab) =>
+          tab.id ? !ids.includes(tab.id) : true,
+        ),
+      })),
+      selectedTabs: state.selectedTabs.filter((id) => !ids.includes(id)),
+    }));
   },
 
   selectedTabs: [],

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { X } from "@untitledui/icons";
 
 import { sendMessage } from "@/lib/messaging";
+import type { Service } from "@/lib/services";
 import Spinner from "@/components/Spinner";
-import { Tab, useTabsStore } from "./store";
 import { SERVICE_ICONS, SERVICE_NAMES, useServices } from "./services";
-import { Service } from "@/lib/services";
+import { Tab, useTabsStore } from "./store";
 
 export default function Actions({
   tab,
@@ -15,6 +16,12 @@ export default function Actions({
   className?: string;
 }) {
   const { anytype, instapaper } = useServices();
+  const { closeTabs } = useTabsStore(
+    useShallow((state) => ({ closeTabs: state.closeTabs })),
+  );
+  function close() {
+    closeTabs([tab.id]);
+  }
 
   if (!tab.url) return null;
 
@@ -22,6 +29,13 @@ export default function Actions({
     <div className={className}>
       {anytype && <SaveAction service="anytype" tab={tab} />}
       {instapaper && <SaveAction service="instapaper" tab={tab} />}
+      <button
+        onClick={close}
+        className="block bg-red-100 text-red-400 rounded mx-1 size-4 cursor-pointer hover:bg-red-200"
+        title="Close"
+      >
+        <X className="size-4" />
+      </button>
     </div>
   );
 }
@@ -77,7 +91,8 @@ function SaveAction({ service, tab }: { service: Service; tab: Tab }) {
     <button
       onClick={save}
       disabled={status === "loading"}
-      className="cursor-pointer relative mx-1"
+      className="cursor-pointer relative mx-1 opacity-80 hover:opacity-100"
+      title={`Save to ${serviceName}`}
     >
       <img
         src={SERVICE_ICONS[service]}
