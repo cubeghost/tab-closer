@@ -4,6 +4,7 @@ import { Service } from "@/lib/services";
 import { useEnabledServices, SERVICE_ICONS, SERVICE_NAMES } from "./services";
 import { sendMessage } from "@/lib/messaging";
 import { X } from "@untitledui/icons";
+import Button from "@/components/Button";
 
 export default function BulkActions() {
   const services = useEnabledServices();
@@ -26,12 +27,14 @@ export default function BulkActions() {
       <div className="my-3">
         {selectedTabs.length} tab{selectedTabs.length === 1 ? "" : "s"} selected
         {selectedTabs.length > 0 && (
-          <button
+          <Button
             onClick={clearSelected}
-            className="text-sm bg-gray-200 hover:bg-gray-300 rounded px-2 py-0.5 ml-4 cursor-pointer"
+            variant="secondary"
+            size="small"
+            className="ml-4"
           >
             Clear
-          </button>
+          </Button>
         )}
       </div>
       {selectedTabs.length > 0 && (

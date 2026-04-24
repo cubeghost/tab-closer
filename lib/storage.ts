@@ -21,11 +21,11 @@ export const arenaDefaultChannel = storage.defineItem<string>(
   },
 );
 
-export const instapaperUsername = storage.defineItem<string>(
-  "local:instapaper-username",
+export const instapaperToken = storage.defineItem<string>(
+  "local:instapaper-token",
   { fallback: "" },
 );
-export const instapaperPassword = storage.defineItem<string>(
-  "local:instapaper-password",
+export const instapaperTokenSecret = storage.defineItem<string>(
+  "local:instapaper-secret",
   { fallback: "" },
 );

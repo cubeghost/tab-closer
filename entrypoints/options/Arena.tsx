@@ -1,6 +1,7 @@
 import { use, useState } from "react";
 import { sendMessage } from "@/lib/messaging";
 import { arenaDefaultChannel, arenaToken, arenaUser } from "@/lib/storage";
+import Button from "@/components/Button";
 
 const tokenPromise = arenaToken.getValue();
 const channelsPromise = sendMessage("arenaChannels");
@@ -78,21 +79,22 @@ export default function Arena() {
           ))}
         </select>
       </label>
-      <button
+      <Button
         type="submit"
         disabled={submitting}
-        className="bg-blue-600 text-white mr-2 px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
+        variant="primary"
+        className="mr-2"
       >
         {submitting ? "Saving..." : "Save"}
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
         onClick={disconnect}
         disabled={submitting}
-        className="bg-blue-200 px-4 py-1 rounded hover:bg-blue-300 disabled:bg-gray-500"
+        variant="secondary"
       >
         {submitting ? "Disconnecting..." : "Disconnect"}
-      </button>
+      </Button>
     </form>
   ) : (
     <form onSubmit={saveToken} className="max-w-xl">
@@ -107,13 +109,9 @@ export default function Arena() {
           className="p-1"
         />
       </label>
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
-      >
+      <Button type="submit" disabled={submitting}>
         {submitting ? "Saving..." : "Save"}
-      </button>
+      </Button>
     </form>
   );
 }

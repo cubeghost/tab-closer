@@ -1,6 +1,7 @@
 import { use, useState } from "react";
 import { sendMessage } from "@/lib/messaging";
 import { anytypeApiKey, anytypeSpace } from "@/lib/storage";
+import Button from "@/components/Button";
 
 const apiKeyPromise = anytypeApiKey.getValue();
 const spacesPromise = sendMessage("anytypeSpaces");
@@ -101,21 +102,22 @@ export default function Anytype() {
           ))}
         </select>
       </label>
-      <button
+      <Button
         type="submit"
         disabled={submitting}
-        className="bg-blue-600 text-white mr-2 px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
+        variant="primary"
+        className="mr-2"
       >
         {submitting ? "Saving..." : "Save"}
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
         onClick={disconnect}
         disabled={submitting}
-        className="bg-blue-200 px-4 py-1 rounded hover:bg-blue-300 disabled:bg-gray-500"
+        variant="secondary"
       >
         {submitting ? "Disconnecting..." : "Disconnect"}
-      </button>
+      </Button>
     </form>
   ) : (
     <form onSubmit={challengeId ? saveApiKey : challenge} className="max-w-xl">
@@ -134,13 +136,9 @@ export default function Anytype() {
         </label>
       )}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:bg-gray-500"
-      >
+      <Button type="submit" disabled={submitting} variant="primary">
         {submitting ? "Connecting..." : "Connect to Anytype"}
-      </button>
+      </Button>
     </form>
   );
 }

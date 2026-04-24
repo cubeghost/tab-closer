@@ -2,6 +2,7 @@ import { useShallow } from "zustand/shallow";
 import { useTabsStore } from "./store";
 import { SERVICE_ICONS } from "./services";
 import Favicon from "./Favicon";
+import Button from "@/components/Button";
 
 export default function Logs() {
   const [logs, clearLogs] = useTabsStore(
@@ -12,12 +13,14 @@ export default function Logs() {
     <>
       <h4 className="mt-auto flex">
         Logs{" "}
-        <button
+        <Button
           onClick={clearLogs}
-          className="ml-auto font-normal text-sm bg-gray-200 hover:bg-gray-300 rounded px-2 cursor-pointer"
+          variant="secondary"
+          size="small"
+          className="ml-auto font-normal"
         >
           Clear
-        </button>
+        </Button>
       </h4>
       <div className="max-h-1/3 overflow-y-scroll">
         <table className="mt-0 mb-0">

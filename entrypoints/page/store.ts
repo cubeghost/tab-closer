@@ -1,5 +1,5 @@
 import { Service } from "@/lib/services";
-import { anytypeApiKey, arenaToken, instapaperUsername } from "@/lib/storage";
+import { anytypeApiKey, arenaToken, instapaperToken } from "@/lib/storage";
 import { use } from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/shallow";
@@ -121,7 +121,7 @@ export const useTabsStore = create<TabsStore>((set, get) => ({
 const servicesPromise: Promise<EnabledServices> = (async () => {
   const anytype = !!(await anytypeApiKey.getValue());
   const arena = !!(await arenaToken.getValue());
-  const instapaper = !!(await instapaperUsername.getValue());
+  const instapaper = !!(await instapaperToken.getValue());
   return { anytype, arena, instapaper } satisfies EnabledServices;
 })();
 const windowsPromise = browser.windows.getAll({
@@ -161,12 +161,9 @@ export function useSyncStore() {
     const unwatchArena = storage.watch(arenaToken.key, (newValue) => {
       setService("arena", !!newValue);
     });
-    const unwatchInstapaper = storage.watch(
-      instapaperUsername.key,
-      (newValue) => {
-        setService("instapaper", !!newValue);
-      },
-    );
+    const unwatchInstapaper = storage.watch(instapaperToken.key, (newValue) => {
+      setService("instapaper", !!newValue);
+    });
 
     return () => {
       unwatchAnytype();

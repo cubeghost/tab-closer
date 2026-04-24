@@ -1,39 +1,39 @@
-import { instapaperPassword, instapaperUsername } from "./storage";
+import { instapaperToken, instapaperTokenSecret } from "./storage";
 
-const API_BASE = "https://www.instapaper.com/api";
+const API_PROXY_BASE = "https://tab-closer-instapaper-proxy.val.run";
 
 export async function instapaperAuth(username: string, password: string) {
-  const formdata = new FormData();
-  formdata.set("username", username);
-  formdata.set("password", password);
+  try {
+    const response = await fetch(`${API_PROXY_BASE}/auth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
 
-  const response = await fetch(`${API_BASE}/authenticate`, {
-    method: "POST",
-    mode: "no-cors",
-    body: formdata,
-  });
+    const token = await response.json();
+    await instapaperToken.setValue(token.oauth_token);
+    await instapaperTokenSecret.setValue(token.oauth_token_secret);
 
-  await instapaperUsername.setValue(username);
-  await instapaperPassword.setValue(password);
-
-  console.log(await response.text());
-  return response.status;
+    return token;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 export async function instapaperSave(tab: Browser.tabs.Tab) {
   if (!tab.url) throw new Error("Cannot save tab without url");
 
-  const username = await instapaperUsername.getValue();
-  const password = await instapaperPassword.getValue();
+  const token = await instapaperToken.getValue();
+  const secret = await instapaperTokenSecret.getValue();
 
-  const formdata = new FormData();
-  formdata.set("username", username);
-  formdata.set("password", password);
-  formdata.set("url", tab.url);
-
-  const response = await fetch(`${API_BASE}/add`, {
+  const response = await fetch(`${API_PROXY_BASE}/add`, {
     method: "POST",
-    body: formdata,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url: tab.url, token: { key: token, secret } }),
   });
 
   return response.ok;
