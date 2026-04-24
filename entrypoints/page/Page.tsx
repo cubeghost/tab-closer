@@ -1,31 +1,42 @@
-import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { Settings01 } from "@untitledui/icons";
 
-import { useTabsStore } from "./store";
+import { useTabsStore, useSyncStore } from "./store";
 import BulkActions from "./BulkActions";
 import Tab from "./Tab";
 import Logs from "./Logs";
-import { useServices } from "./services";
+import { useEnabledServices } from "./services";
+import { twMerge } from "tailwind-merge";
 
 function App() {
-  const services = useServices();
+  useSyncStore();
+
+  const services = useEnabledServices();
+  const noServices = services.length === 0;
 
   function openOptions() {
     browser.runtime.openOptionsPage();
   }
 
   return (
-    <div className="p-3 prose flex flex-col h-full max-w-full">
-      <div className="flex items-center w-full">
+    <div className="prose *:not-[button]:px-3 flex flex-col h-full max-w-full">
+      {noServices && (
+        <button
+          onClick={openOptions}
+          className="bg-blue-600 text-white p-3 cursor-pointer hover:bg-blue-700"
+        >
+          Configure bookmarking services
+        </button>
+      )}
+      <div className="flex items-center py-3 border-b-1 border-gray-100">
         <div className="flex">
           <h1 className="text-2xl mb-0">Tab Closer</h1>
           <button
-            className="ml-4 cursor-pointer text-gray-500 hover:text-gray-800"
+            className="relative flex items-center ml-4 cursor-pointer text-gray-500 hover:text-gray-800"
             onClick={openOptions}
             title="Options"
           >
-            <Settings01 className="size-6" />
+            <Settings01 className={noServices ? "size-5" : "size-6"} />
           </button>
         </div>
 
@@ -41,18 +52,7 @@ function App() {
 export default App;
 
 function Tabs() {
-  const { windows, fetchWindows, fetchGroups } = useTabsStore(
-    useShallow((state) => ({
-      windows: state.windows,
-      fetchWindows: state.fetchWindows,
-      fetchGroups: state.fetchGroups,
-    })),
-  );
-
-  useEffect(() => {
-    fetchWindows();
-    fetchGroups();
-  }, [fetchWindows, fetchGroups]);
+  const [windows] = useTabsStore(useShallow((state) => [state.windows]));
 
   return windows.map((w, index) => (
     <div key={w.id}>
@@ -72,11 +72,8 @@ function Tabs() {
 }
 
 function Options() {
-  const { autoClose, toggleAutoClose } = useTabsStore(
-    useShallow((state) => ({
-      autoClose: state.autoClose,
-      toggleAutoClose: state.toggleAutoClose,
-    })),
+  const [autoClose, toggleAutoClose] = useTabsStore(
+    useShallow((state) => [state.autoClose, state.toggleAutoClose]),
   );
 
   return (

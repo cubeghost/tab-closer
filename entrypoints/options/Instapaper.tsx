@@ -5,7 +5,7 @@ import { instapaperPassword, instapaperUsername } from "@/lib/storage";
 const usernamePromise = instapaperUsername.getValue();
 const passwordPromise = instapaperPassword.getValue();
 
-export function Instapaper() {
+export default function Instapaper() {
   const initialUsername = use(usernamePromise);
   const initialPassword = use(passwordPromise);
   const [username, setUsername] = useState(initialUsername ?? "");

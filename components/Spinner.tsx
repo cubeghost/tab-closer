@@ -1,5 +1,12 @@
-export default function Spinner() {
+import { twMerge } from "tailwind-merge";
+
+export default function Spinner({ className }: { className?: string }) {
   return (
-    <div className="inline-block size-4 animate-spin rounded-full border-4 border-solid border-[rgba(0,0,0,0.25)] border-t-black" />
+    <div
+      className={twMerge(
+        "size-4 animate-spin rounded-full border-3 border-gray-300 border-t-gray-600",
+        className,
+      )}
+    />
   );
 }

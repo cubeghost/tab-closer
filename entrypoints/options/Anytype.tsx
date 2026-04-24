@@ -6,7 +6,7 @@ const apiKeyPromise = anytypeApiKey.getValue();
 const spacesPromise = sendMessage("anytypeSpaces");
 const spacePromise = anytypeSpace.getValue();
 
-export function Anytype() {
+export default function Anytype() {
   const initialApiKey = use(apiKeyPromise);
   const initialSpaces = use(spacesPromise);
   const initialSpace = use(spacePromise);

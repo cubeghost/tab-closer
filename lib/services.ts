@@ -1,1 +1,1 @@
-export type Service = "anytype" | "instapaper";
+export type Service = "anytype" | "arena" | "instapaper";

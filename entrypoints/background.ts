@@ -5,14 +5,11 @@ import {
   anytypeAuthKey,
   anytypeSave,
   anytypeSpaces,
-  anytypeTypes,
 } from "@/lib/anytype";
+import { arenaChannels, arenaCurrentUser, arenaSave } from "@/lib/arena";
 
 export default defineBackground(() => {
-  console.log("Hello background!", { id: browser.runtime.id });
-
   (browser.action ?? browser.browserAction).onClicked.addListener(async () => {
-    console.log("browser action triggered");
     const url = browser.runtime.getURL("/page.html");
     await browser.tabs.create({ url });
   });
@@ -21,16 +18,12 @@ export default defineBackground(() => {
     switch (message.data.service) {
       case "anytype":
         return await anytypeSave(message.data.tab);
+      case "arena":
+        return await arenaSave(message.data.tab);
       case "instapaper":
         return await instapaperSave(message.data.tab);
     }
   });
-
-  onMessage(
-    "instapaperAuth",
-    async (message) =>
-      await instapaperAuth(message.data.username, message.data.password),
-  );
 
   onMessage(
     "anytypeAuthChallenge",
@@ -42,4 +35,16 @@ export default defineBackground(() => {
       await anytypeAuthKey(message.data.challengeId, message.data.code),
   );
   onMessage("anytypeSpaces", async (message) => await anytypeSpaces());
+
+  onMessage(
+    "arenaCurrentUser",
+    async (message) => await arenaCurrentUser(message.data.token),
+  );
+  onMessage("arenaChannels", async (message) => await arenaChannels());
+
+  onMessage(
+    "instapaperAuth",
+    async (message) =>
+      await instapaperAuth(message.data.username, message.data.password),
+  );
 });

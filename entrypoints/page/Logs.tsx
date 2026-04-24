@@ -4,8 +4,8 @@ import { SERVICE_ICONS } from "./services";
 import Favicon from "./Favicon";
 
 export default function Logs() {
-  const { logs, clearLogs } = useTabsStore(
-    useShallow((state) => ({ logs: state.logs, clearLogs: state.clearLogs })),
+  const [logs, clearLogs] = useTabsStore(
+    useShallow((state) => [state.logs, state.clearLogs]),
   );
 
   return (
@@ -14,7 +14,7 @@ export default function Logs() {
         Logs{" "}
         <button
           onClick={clearLogs}
-          className="ml-auto font-normal text-sm bg-gray-200 rounded px-2"
+          className="ml-auto font-normal text-sm bg-gray-200 hover:bg-gray-300 rounded px-2 cursor-pointer"
         >
           Clear
         </button>
@@ -25,7 +25,10 @@ export default function Logs() {
             {logs.map((log, i) => (
               <tr key={`log-${i}`}>
                 <td className="w-6 not-prose">
-                  <img src={SERVICE_ICONS[log.service]} className="size-4" />
+                  <img
+                    src={SERVICE_ICONS[log.service]}
+                    className="size-4 rounded border-1 border-gray-200 overflow-hidden"
+                  />
                 </td>
                 <td>{log.message}</td>
                 <td>

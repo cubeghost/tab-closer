@@ -1,18 +1,18 @@
 import { useShallow } from "zustand/shallow";
 import { type Tab, useTabsStore } from "./store";
 import { Service } from "@/lib/services";
-import { SERVICE_ICONS, SERVICE_NAMES, useServices } from "./services";
+import { useEnabledServices, SERVICE_ICONS, SERVICE_NAMES } from "./services";
 import { sendMessage } from "@/lib/messaging";
 import { X } from "@untitledui/icons";
 
 export default function BulkActions() {
-  const { anytype, instapaper } = useServices();
-  const { selectedTabs, clearSelected, closeTabs } = useTabsStore(
-    useShallow((state) => ({
-      selectedTabs: state.selectedTabs,
-      clearSelected: state.clearSelected,
-      closeTabs: state.closeTabs,
-    })),
+  const services = useEnabledServices();
+  const [selectedTabs, clearSelected, closeTabs] = useTabsStore(
+    useShallow((state) => [
+      state.selectedTabs,
+      state.clearSelected,
+      state.closeTabs,
+    ]),
   );
 
   function closeSelectedTabs() {
@@ -22,30 +22,31 @@ export default function BulkActions() {
   }
 
   return (
-    <div className="flex">
-      <span>{selectedTabs.length} tabs selected</span>
-      <div className="not-prose flex items-center ml-2">
+    <div className="flex gap-4 border-b-1 border-gray-100">
+      <div className="my-3">
+        {selectedTabs.length} tab{selectedTabs.length === 1 ? "" : "s"} selected
         {selectedTabs.length > 0 && (
-          <>
-            {anytype && <BulkSaveAction service="anytype" />}
-            {instapaper && <BulkSaveAction service="instapaper" />}
-            <button
-              onClick={closeSelectedTabs}
-              className="block bg-red-100 text-red-400 rounded mx-1 size-4 cursor-pointer hover:bg-red-200"
-              title="Close"
-            >
-              <X className="size-4" />
-            </button>
-          </>
+          <button
+            onClick={clearSelected}
+            className="text-sm bg-gray-200 hover:bg-gray-300 rounded px-2 py-0.5 ml-4 cursor-pointer"
+          >
+            Clear
+          </button>
         )}
       </div>
       {selectedTabs.length > 0 && (
-        <button
-          onClick={clearSelected}
-          className="ml-auto text-sm bg-gray-200 rounded px-2"
-        >
-          Clear selected
-        </button>
+        <div className="not-prose flex gap-1 items-center ml-auto pl-3 py-3 border-l-1 border-gray-100">
+          {services.map((service) => (
+            <BulkSaveAction service={service} key={service} />
+          ))}
+          <button
+            onClick={closeSelectedTabs}
+            className="bg-red-100 text-red-400 rounded mx-1 cursor-pointer border-1 border-red-200 hover:bg-red-200"
+            title="Close"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
       )}
     </div>
   );
@@ -87,7 +88,6 @@ function BulkSaveAction({ service }: { service: Service }) {
             service,
             tab,
           });
-          console.log("saved", service, saved);
 
           if (saved) {
             log(tab);
@@ -108,16 +108,16 @@ function BulkSaveAction({ service }: { service: Service }) {
     <button
       onClick={save}
       disabled={loading}
-      className="cursor-pointer relative mx-1 opacity-80 hover:opacity-100"
+      className="cursor-pointer relative mx-1 border-1 border-gray-200 rounded overflow-hidden opacity-80 hover:opacity-100"
       title={`Save to ${serviceName}`}
     >
       <img
         src={SERVICE_ICONS[service]}
         alt={`Save to ${serviceName}`}
-        className="size-4"
+        className="size-5"
       />
       {loading && (
-        <div className="absolute top-0 left-0">
+        <div className="absolute size-5 top-0 left-0 bg-[rgb(255,255,255,0.6)] flex items-center justify-center">
           <Spinner />
         </div>
       )}

@@ -19,13 +19,11 @@ const TAB_GROUP_COLORS = {
 };
 
 export default function Tab({ tab }: { tab: Tab }) {
-  const selected = useTabsStore(
-    useShallow((state) =>
+  const [selected, toggleSelected] = useTabsStore(
+    useShallow((state) => [
       tab.id ? state.selectedTabs.includes(tab.id) : false,
-    ),
-  );
-  const toggleSelected = useTabsStore(
-    useShallow((state) => state.toggleSelected),
+      state.toggleSelected,
+    ]),
   );
 
   const focusTab = (event: React.MouseEvent) => {
@@ -34,7 +32,7 @@ export default function Tab({ tab }: { tab: Tab }) {
     browser.tabs.update(tab.id, { active: true });
   };
 
-  const { group, firstInGroup } = useTabsStore(
+  const [group, firstInGroup] = useTabsStore(
     useShallow((state) => {
       const group = tab.groupId
         ? state.groups.find((g) => g.id === tab.groupId)
@@ -44,12 +42,10 @@ export default function Tab({ tab }: { tab: Tab }) {
             .find((w) => w.id === tab.windowId)!
             .tabs.find((t) => t.groupId === group.id)?.id === tab.id
         : false;
-      return {
-        group,
-        firstInGroup,
-      };
+      return [group, firstInGroup];
     }),
   );
+
   const style = useMemo(
     () =>
       ({
@@ -79,16 +75,17 @@ export default function Tab({ tab }: { tab: Tab }) {
           type="checkbox"
           checked={selected}
           onChange={() => toggleSelected(tab.id)}
+          className="mr-1"
         />
         <Favicon tab={tab} />
-        <div className="min-w-56 truncate">
+        <div className="truncate">
           <a href={tab.url} target="_blank" onClick={focusTab}>
             {tab.title}
           </a>
         </div>
         <Actions
           tab={tab}
-          className="flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+          className="ml-auto mr-2 shrink-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100"
         />
       </li>
     </>
