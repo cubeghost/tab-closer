@@ -1,4 +1,5 @@
-import { CSSProperties } from "react";
+import { useMemo } from "react";
+import type { CSSProperties } from "react";
 import { useShallow } from "zustand/shallow";
 
 import { useTabsStore } from "./store";

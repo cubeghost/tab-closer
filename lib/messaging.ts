@@ -1,5 +1,6 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { Service } from "./services";
+import type { Service } from "./services";
+import type { ArenaChannel, ArenaUser } from "./arena";
 
 interface ProtocolMap {
   save(data: { service: Service; tab: Browser.tabs.Tab }): boolean;
@@ -8,8 +9,12 @@ interface ProtocolMap {
   anytypeAuthKey(data: { challengeId: string; code: string }): boolean;
   anytypeSpaces(data: undefined): { name: string; id: string }[];
 
-  arenaCurrentUser(data: { token: string }): { id: string; slug: string };
-  arenaChannels(data: undefined): { id: string; title: string; slug: string }[];
+  arenaAuth(data: {
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
+  }): ArenaUser;
+  arenaChannels(data: undefined): ArenaChannel[];
 
   instapaperAuth(data: { username: string; password: string }): unknown;
 }

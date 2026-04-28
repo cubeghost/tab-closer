@@ -1,6 +1,6 @@
 import { instapaperToken, instapaperTokenSecret } from "./storage";
 
-const API_PROXY_BASE = "https://tab-closer-instapaper-proxy.val.run";
+const API_PROXY_BASE = import.meta.env.WXT_INSTAPAPER_API_PROXY;
 
 export async function instapaperAuth(username: string, password: string) {
   try {

@@ -2,7 +2,7 @@
   "name": "tab-closer",
   "description": "manifest.json description",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -19,6 +19,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@untitledui/icons": "^0.0.22",
     "@webext-core/messaging": "^2.3.0",
+    "pkce-challenge": "^6.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwind-merge": "^3.5.0",

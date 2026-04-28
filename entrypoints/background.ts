@@ -6,7 +6,12 @@ import {
   anytypeSave,
   anytypeSpaces,
 } from "@/lib/anytype";
-import { arenaChannels, arenaCurrentUser, arenaSave } from "@/lib/arena";
+import {
+  arenaAuth,
+  arenaChannels,
+  arenaCurrentUser,
+  arenaSave,
+} from "@/lib/arena";
 
 export default defineBackground(() => {
   (browser.action ?? browser.browserAction).onClicked.addListener(async () => {
@@ -36,6 +41,15 @@ export default defineBackground(() => {
   );
   onMessage("anytypeSpaces", async (message) => await anytypeSpaces());
 
+  onMessage(
+    "arenaAuth",
+    async (message) =>
+      await arenaAuth(
+        message.data.code,
+        message.data.codeVerifier,
+        message.data.redirectUri,
+      ),
+  );
   onMessage(
     "arenaCurrentUser",
     async (message) => await arenaCurrentUser(message.data.token),
