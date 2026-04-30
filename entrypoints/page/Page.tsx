@@ -6,6 +6,7 @@ import BulkActions from "./BulkActions";
 import Tab from "./Tab";
 import Logs from "./Logs";
 import { useEnabledServices } from "./services";
+import ExtensionIcon from "@/assets/icon.svg";
 import { twMerge } from "tailwind-merge";
 
 function App() {
@@ -23,20 +24,25 @@ function App() {
       {noServices && (
         <button
           onClick={openOptions}
-          className="bg-blue-600 text-white p-3 cursor-pointer hover:bg-blue-700"
+          className="bg-indigo-600 text-white p-3 cursor-pointer hover:bg-indigo-700"
         >
           Configure bookmarking services
         </button>
       )}
       <div className="flex items-center py-3 border-b-1 border-gray-100">
         <div className="flex">
-          <h1 className="text-2xl mb-0">Tab Closer</h1>
+          <h1 className="flex text-2xl mb-0">
+            <img src="/icons/128.png" className="size-8 not-prose mr-2" />
+            Tab Closer
+          </h1>
           <button
             className="relative flex items-center ml-4 cursor-pointer text-gray-500 hover:text-gray-800"
             onClick={openOptions}
             title="Options"
           >
-            <Settings01 className={noServices ? "size-5" : "size-6"} />
+            <Settings01
+              className={twMerge("mt-0.5", noServices ? "size-5" : "size-6")}
+            />
           </button>
         </div>
 

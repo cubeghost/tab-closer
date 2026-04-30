@@ -29,3 +29,9 @@ export const instapaperTokenSecret = storage.defineItem<string>(
   "local:instapaper-secret",
   { fallback: "" },
 );
+export const instapaperDefaultFolder = storage.defineItem<string>(
+  "local:instapaper-folder",
+  {
+    fallback: "",
+  },
+);

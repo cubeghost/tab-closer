@@ -42,7 +42,7 @@ export async function arenaAuth(
   return user;
 }
 
-export async function arenaCurrentUser(): Promise<ArenaUser> {
+async function arenaCurrentUser(): Promise<ArenaUser> {
   const token = await arenaToken.getValue();
   if (!token) throw new Error("Missing Are.na token");
 

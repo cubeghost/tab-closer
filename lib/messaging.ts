@@ -1,6 +1,7 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import type { Service } from "./services";
 import type { ArenaChannel, ArenaUser } from "./arena";
+import type { InstapaperFolder } from "./instapaper";
 
 interface ProtocolMap {
   save(data: { service: Service; tab: Browser.tabs.Tab }): boolean;
@@ -17,6 +18,7 @@ interface ProtocolMap {
   arenaChannels(data: undefined): ArenaChannel[];
 
   instapaperAuth(data: { username: string; password: string }): unknown;
+  instapaperFolders(data: undefined): InstapaperFolder[];
 }
 
 export const { sendMessage, onMessage } =

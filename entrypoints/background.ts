@@ -1,17 +1,16 @@
 import { onMessage } from "@/lib/messaging";
-import { instapaperAuth, instapaperSave } from "@/lib/instapaper";
+import {
+  instapaperAuth,
+  instapaperFolders,
+  instapaperSave,
+} from "@/lib/instapaper";
 import {
   anytypeAuthChallenge,
   anytypeAuthKey,
   anytypeSave,
   anytypeSpaces,
 } from "@/lib/anytype";
-import {
-  arenaAuth,
-  arenaChannels,
-  arenaCurrentUser,
-  arenaSave,
-} from "@/lib/arena";
+import { arenaAuth, arenaChannels, arenaSave } from "@/lib/arena";
 
 export default defineBackground(() => {
   (browser.action ?? browser.browserAction).onClicked.addListener(async () => {
@@ -50,10 +49,6 @@ export default defineBackground(() => {
         message.data.redirectUri,
       ),
   );
-  onMessage(
-    "arenaCurrentUser",
-    async (message) => await arenaCurrentUser(message.data.token),
-  );
   onMessage("arenaChannels", async (message) => await arenaChannels());
 
   onMessage(
@@ -61,4 +56,5 @@ export default defineBackground(() => {
     async (message) =>
       await instapaperAuth(message.data.username, message.data.password),
   );
+  onMessage("instapaperFolders", async (message) => await instapaperFolders());
 });

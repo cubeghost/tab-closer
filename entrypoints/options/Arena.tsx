@@ -13,7 +13,7 @@ export default function Arena() {
   const [authed, setAuthed] = useState(!!initialToken);
   const [channels, setChannels] = useState(use(channelsPromise) ?? []);
   const [defaultChannel, setDefaultChannel] = useState(
-    use(defaultChannelPromise) ?? [],
+    use(defaultChannelPromise) ?? "",
   );
   const [submitting, setSubmitting] = useState(false);
 
