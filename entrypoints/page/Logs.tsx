@@ -20,7 +20,7 @@ export default function Logs() {
           onClick={clearLogs}
           variant="secondary"
           size="small"
-          className={twJoin("font-normal ml-2")}
+          className="font-normal ml-2"
         >
           Clear
         </Button>
