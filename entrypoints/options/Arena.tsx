@@ -35,6 +35,7 @@ export default function Arena() {
     await arenaDefaultChannel.setValue("");
     setAuthed(false);
     setChannels([]);
+    setDefaultChannel("");
   };
 
   const startAuthFlow: React.SubmitEventHandler = async (event) => {

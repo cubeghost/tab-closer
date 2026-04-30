@@ -20,7 +20,7 @@ function App() {
   }
 
   return (
-    <div className="prose *:not-[button]:px-3 flex flex-col h-full max-w-full">
+    <div className="prose *:not-[button]:px-3 flex flex-col h-screen max-w-full">
       {noServices && (
         <button
           onClick={openOptions}
@@ -49,7 +49,9 @@ function App() {
         <Options />
       </div>
       <BulkActions />
-      <Tabs />
+      <div className="overflow-y-scroll">
+        <Tabs />
+      </div>
       <Logs />
     </div>
   );
@@ -62,13 +64,13 @@ function Tabs() {
 
   return windows.map((w, index) => (
     <div key={w.id}>
-      <h3 className="font-bold flex items-center">
+      <h3 className="font-bold flex items-center mt-4">
         Window {index + 1}{" "}
         <span className="rounded bg-gray-200 text-xs font-normal px-1 py-0.5 ml-2">
           {w.tabs.length} tab{w.tabs.length !== 1 && "s"}
         </span>
       </h3>
-      <ul className="not-prose">
+      <ul className="not-prose mb-4">
         {w.tabs.map((tab) => (
           <Tab tab={tab} key={tab.id} />
         ))}

@@ -65,7 +65,10 @@ export default function Instapaper() {
     try {
       await instapaperToken.setValue("");
       await instapaperTokenSecret.setValue("");
+      await instapaperDefaultFolder.setValue("");
       setAuthed(false);
+      setFolders([]);
+      setDefaultFolder("");
     } catch (err) {
     } finally {
       setSubmitting(false);

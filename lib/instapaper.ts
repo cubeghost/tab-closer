@@ -34,6 +34,7 @@ export async function instapaperAuth(username: string, password: string) {
 export async function instapaperFolders(): Promise<InstapaperFolder[]> {
   const token = await instapaperToken.getValue();
   const secret = await instapaperTokenSecret.getValue();
+  if (!token || !secret) return [];
 
   const response = await fetch(`${API_PROXY_BASE}/folders`, {
     method: "POST",
